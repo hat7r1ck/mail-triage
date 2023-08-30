@@ -19,3 +19,10 @@ This repository on GitLab contains the code for an application for parsing email
 - add AI modle for analyzing url 
 - VT sender domain look up 
  - make more user friendly 
+
+## Screenshots
+
+![Screenshot 2023-08-29 172019](https://github.com/hat7r1ck/mail-triage/assets/110708720/499837a4-9006-4f28-963d-f0a493d12257)
+
+
+![Screenshot 2023-08-29 172100](https://github.com/hat7r1ck/mail-triage/assets/110708720/4d407342-dd10-453d-a764-3e5b99027e5c)
