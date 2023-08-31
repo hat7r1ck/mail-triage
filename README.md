@@ -24,8 +24,8 @@ This repository on GitLab contains the code for an application for parsing email
 
 ![Screenshot 2023-08-29 172019](https://github.com/hat7r1ck/mail-triage/assets/110708720/499837a4-9006-4f28-963d-f0a493d12257)
 
-
 ![Screenshot 2023-08-29 172100](https://github.com/hat7r1ck/mail-triage/assets/110708720/4d407342-dd10-453d-a764-3e5b99027e5c)
 
-
 ![Screenshot 2023-08-31 090913](https://github.com/hat7r1ck/mail-triage/assets/110708720/1981ba80-f4d7-4063-985b-ad09c57615a7)
+
+![Screenshot 2023-08-31 091136](https://github.com/hat7r1ck/mail-triage/assets/110708720/11771f5a-1e49-4160-8ff3-9e7074ecf3ba)
