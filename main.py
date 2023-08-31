@@ -91,30 +91,46 @@ def toggle_additional_work_area():
         toggle_additional_work_area_button.grid(row=1, column=4, columnspan=1, padx=5, pady=5, sticky='nsew')
 
 # save classification function and button 
+# save classification function and button 
 def save_classification():
     subject = email_message['Subject']
     recipient = email_message['To']
     classification = classification_var.get()
-    classification = classification_var.get()
     additional_notes = text_box.get(1.0, END)
     is_new_email, last_classification = check_if_new_email(subject, recipient)
+    
+    fieldnames = ['subject', 'display_name', 'recipient', 'ip_address', 'dmarc', 'spf', 'dkim', 'links', 'classification', 'additional_notes']
+
     if is_new_email:
         with open('email_data.csv', 'a', newline='') as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=['subject', 'recipient', 'classification', 'additional_notes'])
-            writer.writerow({'subject': subject, 'recipient': recipient, 'classification': classification, 'additional_notes': additional_notes})
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writerow({'subject': subject, 'display_name': "", 'recipient': recipient, 'ip_address': "", 'dmarc': "", 'spf': "", 'dkim': "", 'links': "", 'classification': classification, 'additional_notes': additional_notes})
     else:
-        with open('email_data.csv', 'a') as csvfile:
-            lines = csvfile.readlines()
-            for line in lines:
-                if not (subject in line and recipient in line and last_classification in line):
-                    csvfile.write(line)
-                    csvfile.write(f'{subject},{recipient},{classification},{additional_notes}\n')
-                    messagebox.showinfo("Email Classification", f"Email classification updated from {last_classification} to {classification}")
+        rows = []
+        with open('email_data.csv', 'r') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                if row['subject'] == subject and row['recipient'] == recipient and row['classification'] == last_classification:
+                    row['classification'] = classification
+                    row['additional_notes'] = additional_notes.strip()  # Remove trailing newline
+                rows.append(row)
+        
+        with open('email_data.csv', 'w', newline='') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+            for row in rows:
+                writer.writerow(row)
+
+    messagebox.showinfo("Email Classification", f"Email classification updated from {last_classification} to {classification}")
+
+
 
 
 save_classification_button = Button(additional_work_area, text="Save Classification", command=save_classification)
 
+
 # upload email function 
+# upload email function
 def upload_email():
     global email_message
     filepath = filedialog.askopenfilename()
@@ -123,22 +139,23 @@ def upload_email():
             raw_email = f.read()
             # parse the email
             email_message = email.message_from_string(raw_email)
-            subject = email_message['Subject']
-            recipient = email_message['To']
+            subject = email_message.get('Subject', '')  # Use get method to handle missing subject
+            recipient = email_message.get('To', '')  # Use get method to handle missing recipient
             body = get_body()
-        
+
             # check if email is new or has been previously classified
             is_new_email, last_classification = check_if_new_email(subject, recipient)
-        
-            # Extract all the stuffs 
+
+            # Extract all the stuffs
             headers = email_message.items()
             dmarc = email_message.get("ARC-Authentication-Results: i=1")
             spf = email_message.get("Received-SPF")
             dkim = email_message.get("DKIM-Signature")
-            display_name = email_message["from"]
-            ip_address = email_message["received"].split(" ")[-1].strip("[]")
+            display_name = email_message.get("from")
+            ip_address = email_message.get("received", "").split(" ")[-1].strip("[]")
             links = re.findall(r'(https?://[^\s]+)', body)
-            
+
+     
             # show the additional work area
             toggle_additional_work_area()
             
@@ -175,9 +192,9 @@ def upload_email():
 def parse_and_classify(subject, recipient, display_name, ip_address, dmarc, spf, dkim, links, is_new_email, last_classification):
     classification = classification_dropdown.get()
     with open('email_data.csv', 'a') as csvfile:
-        fieldnames = ['subject', 'display_name', 'recipient', 'ip_address', 'dmarc', 'spf', 'dkim', 'links', 'classification']
+        fieldnames = ['subject', 'display_name', 'recipient', 'ip_address', 'dmarc', 'spf', 'dkim', 'links', 'classification', 'additional_notes']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-        writer.writerow({'subject': subject, 'display_name': display_name, 'recipient': recipient, 'ip_address': ip_address, 'dmarc': dmarc, 'spf': spf, 'dkim': dkim, 'links': links, 'classification': classification})
+        writer.writerow({'subject': subject, 'display_name': display_name, 'recipient': recipient, 'ip_address': ip_address, 'dmarc': dmarc, 'spf': spf, 'dkim': dkim, 'links': links, 'classification': classification, 'additional_notes': ""})
         csvfile.close()
     if is_new_email:
         messagebox.showinfo("Success", "New email and classification saved to CSV file.")
